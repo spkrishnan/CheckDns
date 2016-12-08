@@ -1,9 +1,9 @@
 # CheckDNS
 
-The goal of this script query a DNS server and remove a specific route if the DNS server is not responding to the query
+The goal of this script is to query a DNS server and remove a specific route if the DNS server is not responding to the query
 
-- The event options runs the script every one minute
-- The script checks queries the DNS server
+- The event options runs the script every minute
+- The script queries the DNS server
 - If there is no response from the DNS server, the route specified in the script is removed from the configuration
 
 
