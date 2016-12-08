@@ -14,7 +14,7 @@ match / {
 	var $local = jcs:open();
         var $rpc = {
             <request-shell-execute> {
-                <command> "host cnn.com 192.168.5.8";
+                <command> "host ntp.juniper.net 192.168.5.8";
             }
         }
 
