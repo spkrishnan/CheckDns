@@ -1,0 +1,55 @@
+/*Copyright 2016 Juniper Networks, Inc. All rights reserved.
+*Licensed under the Juniper Networks Script Software License (the "License"). 
+*You may not use this script file except in compliance with the License, which is located #at http://www.juniper.net/support/legal/scriptlicense/
+*Unless required by applicable law or otherwise agreed to in writing by the parties, #software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT #WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+*/
+
+version 1.1;
+ns junos = "http://xml.juniper.net/junos/*/junos";
+ns xnm = "http://xml.juniper.net/xnm/1.1/xnm";
+ns jcs = "http://xml.juniper.net/junos/commit-scripts/1.0";
+import "../import/junos.xsl";
+
+match / {
+	var $local = jcs:open();
+        var $rpc = {
+            <request-shell-execute> {
+                <command> "host cnn.com 192.168.5.8";
+            }
+        }
+
+        var $dnsquery = jcs:execute($local,$rpc);
+
+	var $delete-route = { 
+            <configuration> {
+                <routing-options> {
+                    <static> {
+                        <route> {
+                            <name> "2.2.2.2/32";
+                            <next-hop delete="delete"> "1.1.1.1";
+                        }
+                        
+                    }
+                }                
+            }
+        }
+	
+	var $load-action = "merge";
+	var $options := {
+       			<commit-options> {
+           		<log> "Deleted Route with next hop 1.1.1.1";
+        	}
+    	}	
+
+        var $pattern = "connection timed out";
+        var $servernotfound = jcs:regex($pattern,$dnsquery);	
+
+	if ($servernotfound) {
+		var $results := { 
+     			call jcs:load-configuration( $action=$load-action, $commit-options=$options, $configuration=$delete-route, $connection=$local);
+    		}		
+	}	
+        expr jcs:close($local);
+}
+
+
